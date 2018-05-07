@@ -8,6 +8,11 @@ const user = new Schema({
         type: String,
         required: true
     },
+    username:{
+        type:String,
+        required: true,
+        unique: true
+    },
     hackathonWons: [hackathonSchema],
     hackathonParticipated: [hackathonSchema],
     teams: [teamSchema],

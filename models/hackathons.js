@@ -1,3 +1,5 @@
+import { mongo } from 'mongoose';
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 // const userSchema = require('./userSchema').schema;
@@ -23,7 +25,11 @@ const hackathon = new Schema({
         type: String
     },
     venue:{
-        type: String
+        type: String,
+        required: true
+    },
+    winner:{
+        type: mongoose.Schema.Types.ObjectId
     },
     participants:[mongoose.Schema.Types.ObjectId]
 }, {
