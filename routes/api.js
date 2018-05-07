@@ -42,13 +42,17 @@ router.get('/', function (req, res, next) {
 
   var callback = function (err, data) {
     if (err) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
       res.json({
         err: err,
         success: false
       })
     } else {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
       res.json({
-        data: response,
+        data: data,
         success: true
       })
     }
@@ -58,13 +62,61 @@ router.get('/', function (req, res, next) {
     if (req.query.name) {
       hackathons.find({
         "name": req.query.name
-      }, callback);
+      }, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     } else if (req.query.id) {
       hackathons.find({
         "_id": req.query.id
-      }, callback);
+      }, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     } else {
-      hackathons.find({}, callback);
+      hackathons.find({}, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     }
   }
   //This is the code for URL/api?type='hackathonList'
@@ -74,26 +126,122 @@ router.get('/', function (req, res, next) {
     if (req.query.name) {
       teams.find({
         "name": req.query.name
-      }, callback);
+      }, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     } else if (req.query.id) {
       teams.find({
         "_id": req.query.id
-      }, callback);
+      }, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     } else {
-      teams.find({}, callback);
+      teams.find({}, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     }
   } else if (req.query.type == 'users') {
     //for query name='anything'
     if (req.query.name) {
       users.find({
         "name": req.query.name
-      }, callback);
+      }, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     } else if (req.query.id) {
       users.find({
         "_id": req.query.id
-      }, callback);
+      }, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     } else {
-      users.find({}, callback);
+      users.find({}, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     }
   } else {
     res.end("HELLO");
@@ -115,13 +263,45 @@ router.post('/', function (req, res, next) {
       if (req.body.prize) {
         objectToSubmit['prize'] = req.body.prize;
       }
-      hackathons.create(objectToSubmit, callback);
+      hackathons.create(objectToSubmit, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     }
     if (req.body.type == 'team') {
       var objectToSubmit = {
         "name": req.body.name,
       }
-      hackathons.create(objectToSubmit, callback);
+      hackathons.create(objectToSubmit, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     }
     if (req.body.type == 'user') {
       var objectToSubmit = {
@@ -130,7 +310,23 @@ router.post('/', function (req, res, next) {
       if (req.body.institute) {
         objectToSubmit['institute'] = req.body.institute;
       }
-      users.create(objectToSubmit, callback);
+      users.create(objectToSubmit, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     }
   }
   if (req.body.action == 'update') {
@@ -159,7 +355,23 @@ router.post('/', function (req, res, next) {
           $set: objectToSubmit
         }, {
           new: true
-        }, callback);
+        }, function (err, data) {
+          if (err) {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              err: err,
+              success: false
+            })
+          } else {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              data: data,
+              success: true
+            })
+          }
+        });
       }
       var id;
       if (req.body.id) {
@@ -189,7 +401,23 @@ router.post('/', function (req, res, next) {
           $set: objectToSubmit
         }, {
           new: true
-        }, callback);
+        }, function (err, data) {
+          if (err) {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              err: err,
+              success: false
+            })
+          } else {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              data: data,
+              success: true
+            })
+          }
+        });
       }
       var id;
       if (req.body.id) {
@@ -216,30 +444,205 @@ router.post('/', function (req, res, next) {
       if (req.body.institute) {
         objectToSubmit['institute'] = req.body.institute;
       }
-      users.create(objectToSubmit, callback);
+      users.create(objectToSubmit, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
     }
   }
   if (req.body.action == 'add') {
-    if(req.body.type == 'hackathonWon'){
+    if (req.body.type == 'hackathonWon') {
       var hackathonId;
       var teamId;
-      if(req.body.hackathonName){
-        hackathons.findOne({"hackathonName":req.body.hackathonName},(err,result)=>{
+      if (req.body.hackathonName) {
+        hackathons.findOne({
+          "hackathonName": req.body.hackathonName
+        }, (err, result) => {
           hackathonId = result._id;
         })
-      }else{
+      } else {
         hackathonId = req.body.hackathonId;
       }
-      if(req.body.teamName){
-        hackathons.findOne({"teamName":req.body.teamName},(err,result)=>{
+      if (req.body.teamName) {
+        teams.findOne({
+          "teamName": req.body.teamName
+        }, (err, result) => {
           teamId = result._id;
         })
-      }else{
+      } else {
         teamId = req.body.teamId;
       }
-      
+      hackathons.findByIdAndUpdate(hackathonId, {
+        $set: {
+          winner: teamId
+        }
+      }, function (err, data) {
+        if (err) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            err: err,
+            success: false
+          })
+        } else {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({
+            data: data,
+            success: true
+          })
+        }
+      });
+      teams.findById(teamId, (err, result) => {
+        result.hackathonWon.push(hackathonId);
+        result.save();
+        (result.participants).forEach(element => {
+          findById(element, (err, user) => {
+            user.hackathonWons.push(hackathonId);
+            user.save();
+          })
+        });
+      });
     }
+  }
+  if (req.body.type == 'hackathonParticipant') {
+    var hackathonId;
+    var teamId;
+    if (req.body.hackathonName) {
+      hackathons.findOne({
+        "hackathonName": req.body.hackathonName
+      }, (err, result) => {
+        hackathonId = result._id;
+      })
+    } else {
+      hackathonId = req.body.hackathonId;
+    }
+    if (req.body.teamName) {
+      teams.findOne({
+        "teamName": req.body.teamName
+      }, (err, result) => {
+        teamId = result._id;
+      })
+    } else {
+      teamId = req.body.teamId;
+    }
+    hackathons.findById(hackathonId, (err, element) => {
+      element.participants.push(teamId);
+      element.save();
+    })
+    teams.findById(teamId, (err, result) => {
+      result.hackthonParticipated.push(hackathonId);
+      result.save();
+      (result.participants).forEach(element => {
+        findById(element, (err, user) => {
+          user.hackathonParticipated.push(hackathonId);
+          user.save();
+        })
+      });
+    });
+  }
+  if (req.body.type == 'teamPlayer') {
+    var userId;
+    var teamId;
+    if (req.body.username) {
+      users.findOne({
+        "username": req.body.username
+      }, (err, result) => {
+        userId = result._id;
+      })
+    } else {
+      userId = req.body.userId;
+    }
+    if (req.body.teamName) {
+      teams.findOne({
+        "teamName": req.body.teamName
+      }, (err, result) => {
+        teamId = result._id;
+      })
+    } else {
+      teamId = req.body.teamId;
+    }
+    team.findById(teamId, (err, element) => {
+      element.participants.push(userId);
+      element.save();
+    })
+    users.findById(userId, (err, result) => {
+      result.teams.push(teamId);
+      result.save();
+    });
+
   }
 });
 
+
+router.get('/getUsers', (req, res, next) => {
+  users.find({}, function (err, data) {
+    if (err) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({
+        err: err,
+        success: false
+      })
+    } else {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({
+        data: data,
+        success: true
+      })
+    }
+  });
+})
+router.get('/getTeams', (req, res, next) => {
+  teams.find({}, function (err, data) {
+    if (err) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({
+        err: err,
+        success: false
+      })
+    } else {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({
+        data: data,
+        success: true
+      })
+    }
+  });
+})
+router.get('/getHackathons', (req, res, next) => {
+  hackathons.find({}, function (err, data) {
+    if (err) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({
+        err: err,
+        success: false
+      })
+    } else {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({
+        data: data,
+        success: true
+      })
+    }
+  });
+})
 module.exports = router;

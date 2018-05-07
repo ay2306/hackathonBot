@@ -7,7 +7,9 @@ const team = new Schema({
         type:String,
         required: true
     },
-    participants: [mongoose.Schema.Types.ObjectId]
+    participants: [mongoose.Schema.Types.ObjectId],
+    hackthonParticipated: [mongoose.Schema.Types.ObjectId],
+    hackathonWon: [[mongoose.Schema.Types.ObjectId]]
 }, {
     timestamps: true
 });
