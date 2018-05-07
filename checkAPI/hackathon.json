@@ -1,0 +1,10 @@
+{
+	"action" : "create",
+	"type" : "hackathon",
+	"name" : "MSIT EVENT",
+	"date": "Tue May 15 2018 04:36:21 GMT+0530 (IST)",
+	"endDate": "Tue May 22 2018 04:36:21 GMT+0530 (IST)",
+	"venue": "MSIT ground floor",
+	"organisers":"Gempierre",
+	"prize":"PS4"
+}

@@ -285,7 +285,8 @@ router.post('/', function (req, res, next) {
       var objectToSubmit = {
         "name": req.body.name,
       }
-      hackathons.create(objectToSubmit, function (err, data) {
+      console.log(objectToSubmit);
+      teams.create(objectToSubmit, function (err, data) {
         if (err) {
           res.statusCode = 500;
           res.setHeader('Content-Type', 'application/json');
@@ -306,6 +307,7 @@ router.post('/', function (req, res, next) {
     if (req.body.type == 'user') {
       var objectToSubmit = {
         "name": req.body.name,
+        "username": req.body.username
       }
       if (req.body.institute) {
         objectToSubmit['institute'] = req.body.institute;
@@ -379,7 +381,7 @@ router.post('/', function (req, res, next) {
       } else if (req.body.name) {
         hackathons.find({
           "name": req.body.name
-        }, (err, res) => {
+        }, (err, result) => {
           if (err) {
             res.json({
               "success": false
@@ -425,7 +427,7 @@ router.post('/', function (req, res, next) {
       } else if (req.body.name) {
         teams.find({
           "name": req.body.name
-        }, (err, res) => {
+        }, (err, result) => {
           if (err) {
             res.json({
               "success": false
