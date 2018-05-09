@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var users = require('../models/user').model;
 var teams = require('../models/teams').model;
 var hackathons = require('../models/hackathons').model;
+mongoose.Promise = require('bluebird');
 /* GET home page. */
 router.get('/', function (req, res, next) {
   //This is the code for URL/api?type='hackathonList'
@@ -353,6 +354,7 @@ router.post('/', function (req, res, next) {
         if (req.body.prize) {
           objectToSubmit['prize'] = req.body.prize;
         }
+        console.log(objectToSubmit);
         hackathons.findByIdAndUpdate(id, {
           $set: objectToSubmit
         }, {
@@ -387,11 +389,14 @@ router.post('/', function (req, res, next) {
               "success": false
             })
           } else {
+            console.log(result);
+            console.log(result[0]._id);
+
             id = result[0]._id;
+            updateFunction(id, req.body);
           }
         })
       }
-      updateFunction(id, req.body);
     }
     if (req.body.type == 'team') {
       var updateFunction = function (id, data) {
@@ -434,35 +439,59 @@ router.post('/', function (req, res, next) {
             })
           } else {
             id = result[0]._id;
+            updateFunction(id, req.body);
           }
         })
       }
-      updateFunction(id, req.body);
     }
     if (req.body.type == 'user') {
-      var objectToSubmit = {
-        "name": req.body.name,
-      }
-      if (req.body.institute) {
-        objectToSubmit['institute'] = req.body.institute;
-      }
-      users.create(objectToSubmit, function (err, data) {
-        if (err) {
-          res.statusCode = 500;
-          res.setHeader('Content-Type', 'application/json');
-          res.json({
-            err: err,
-            success: false
-          })
-        } else {
-          res.statusCode = 200;
-          res.setHeader('Content-Type', 'application/json');
-          res.json({
-            data: data,
-            success: true
-          })
+      var updateFunction = function (id, data) {
+        var objectToSubmit = {};
+        if (req.body.name) {
+          objectToSubmit['name'] = req.body.name;
         }
-      });
+        if (req.body.institute) {
+          objectToSubmit['institute'] = req.body.institute;
+        }
+        users.findByIdAndUpdate(id, {
+          $set: objectToSubmit
+        }, {
+          new: true
+        }, function (err, data) {
+          if (err) {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              err: err,
+              success: false
+            })
+          } else {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              data: data,
+              success: true
+            })
+          }
+        });
+      }
+      var id;
+      if (req.body.id) {
+        id = req.body.id;
+      } else if (req.body.name) {
+        users.find({
+          "name": req.body.name
+        }, (err, result) => {
+          if (err) {
+            res.json({
+              "success": false
+            })
+          } else {
+            id = result[0]._id;
+            updateFunction(id, req.body);
+          }
+        })
+      }
     }
   }
   if (req.body.action == 'add') {
@@ -519,73 +548,112 @@ router.post('/', function (req, res, next) {
         });
       });
     }
-  }
-  if (req.body.type == 'hackathonParticipant') {
-    var hackathonId;
-    var teamId;
-    if (req.body.hackathonName) {
-      hackathons.findOne({
-        "hackathonName": req.body.hackathonName
-      }, (err, result) => {
-        hackathonId = result._id;
-      })
-    } else {
-      hackathonId = req.body.hackathonId;
-    }
-    if (req.body.teamName) {
-      teams.findOne({
-        "teamName": req.body.teamName
-      }, (err, result) => {
-        teamId = result._id;
-      })
-    } else {
-      teamId = req.body.teamId;
-    }
-    hackathons.findById(hackathonId, (err, element) => {
-      element.participants.push(teamId);
-      element.save();
-    })
-    teams.findById(teamId, (err, result) => {
-      result.hackthonParticipated.push(hackathonId);
-      result.save();
-      (result.participants).forEach(element => {
-        findById(element, (err, user) => {
-          user.hackathonParticipated.push(hackathonId);
-          user.save();
-        })
-      });
-    });
-  }
-  if (req.body.type == 'teamPlayer') {
-    var userId;
-    var teamId;
-    if (req.body.username) {
-      users.findOne({
-        "username": req.body.username
-      }, (err, result) => {
-        userId = result._id;
-      })
-    } else {
-      userId = req.body.userId;
-    }
-    if (req.body.teamName) {
-      teams.findOne({
-        "teamName": req.body.teamName
-      }, (err, result) => {
-        teamId = result._id;
-      })
-    } else {
-      teamId = req.body.teamId;
-    }
-    team.findById(teamId, (err, element) => {
-      element.participants.push(userId);
-      element.save();
-    })
-    users.findById(userId, (err, result) => {
-      result.teams.push(teamId);
-      result.save();
-    });
 
+    if (req.body.type == 'hackathonParticipant') {
+      var hackathonId;
+      var teamId;
+      if (req.body.hackathonName) {
+        hackathons.findOne({
+          "hackathonName": req.body.hackathonName
+        }, (err, result) => {
+          hackathonId = result._id;
+        })
+      } else {
+        hackathonId = req.body.hackathonId;
+      }
+      if (req.body.teamName) {
+        teams.findOne({
+          "teamName": req.body.teamName
+        }, (err, result) => {
+          teamId = result._id;
+        })
+      } else {
+        teamId = req.body.teamId;
+      }
+      hackathons.findById(hackathonId, (err, element) => {
+        element.participants.push(teamId);
+        element.save();
+      })
+      teams.findById(teamId, (err, result) => {
+        result.hackthonParticipated.push(hackathonId);
+        result.save();
+        (result.participants).forEach(element => {
+          findById(element, (err, user) => {
+            user.hackathonParticipated.push(hackathonId);
+            user.save();
+          })
+        });
+      });
+    }
+    if (req.body.type == 'teamPlayer') {
+      var updateTeam = function (teamId, userId) {
+        teams.findById(teamId)
+          .then((element) => {
+            element.participants.push(userId);
+            element.save()
+              .then((response) => {
+                updateUser(teamId, userId);
+              })
+          })
+          .catch((err) => {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              err: err,
+              success: false
+            })
+          });
+      }
+      var updateUser = function (teamId, userId) {
+        users.findById(userId)
+          .then((result) => {
+            result.teams.push(teamId);
+            result.save()
+              .then((response) => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json({
+                  data: response,
+                  success: true
+                })
+              })
+          })
+          .catch((err) => {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              err: err,
+              success: false
+            })
+          });
+      }
+      var userId;
+      var teamId;
+      if (!req.body.teamName) {
+        teamId = req.body.teamId;
+      }
+      if (!req.body.username) {
+        userId = req.body.userId;
+      } else {
+        users.findOne({
+          "username": req.body.username
+        }, (err, result) => {
+          console.log(result);
+          userId = result._id;
+          if (req.body.teamName) {
+            teams.findOne({
+              "name": req.body.teamName
+            }, (err, response) => {
+              console.log(result);
+              teamId = response._id;
+              console.log("TEAM ID " + teamId);
+              console.log("USER ID " + userId);
+              updateTeam(teamId, userId);
+            })
+          }
+        })
+      }
+    }
   }
 });
 
