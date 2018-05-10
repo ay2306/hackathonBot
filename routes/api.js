@@ -496,104 +496,220 @@ router.post('/', function (req, res, next) {
   }
   if (req.body.action == 'add') {
     if (req.body.type == 'hackathonWon') {
+      var updateTeam = function (teamId, hackathonId) {
+        teams.findById(teamId)
+          .then((element) => {
+            element.hackathonWon.push(hackathonId);
+            teams.findByIdAndUpdate(teamId, {
+              $set: {
+                hackathonWon: element.hackathonWon
+              }
+            }, {
+              new: true
+            }, (err, response) => {
+              var participants = response.participants;
+              participants.forEach(participant => {
+                users.findById(participant, (err, parResponse) => {
+                  console.log("USER: " + parResponse);
+                  parResponse.hackathonWons.push(hackathonId);
+                  users.findByIdAndUpdate(participant, {
+                    $set: {
+                      hackathonWons: parResponse.hackathonWons
+                    }
+                  }, {
+                    new: true
+                  }, (err, variable) => {
+                    //do nothing
+                  })
+                })
+              });
+              console.log("TEAM UPDATEDs")
+              console.log(response);
+              updateHackathon(teamId, hackathonId);
+            })
+          })
+          .catch((err) => {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              err: err,
+              success: false
+            })
+          });
+      }
+      var updateHackathon = function (teamId, hackathonId) {
+        hackathons.findByIdAndUpdate(hackathonId, {
+          $set: {
+            winner: teamId
+          }
+        }, {
+          new: true
+        }, (err, response) => {
+          if (err) {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              err: err,
+              success: false
+            })
+          } else {
+            console.log("Hackathon UPDATEDs")
+            console.log(response);
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              data: response,
+              success: true
+            })
+          }
+        })
+      }
       var hackathonId;
       var teamId;
-      if (req.body.hackathonName) {
-        hackathons.findOne({
-          "hackathonName": req.body.hackathonName
-        }, (err, result) => {
-          hackathonId = result._id;
-        })
-      } else {
-        hackathonId = req.body.hackathonId;
-      }
-      if (req.body.teamName) {
-        teams.findOne({
-          "teamName": req.body.teamName
-        }, (err, result) => {
-          teamId = result._id;
-        })
-      } else {
+      if (!req.body.teamName) {
         teamId = req.body.teamId;
       }
-      hackathons.findByIdAndUpdate(hackathonId, {
-        $set: {
-          winner: teamId
-        }
-      }, function (err, data) {
-        if (err) {
-          res.statusCode = 500;
-          res.setHeader('Content-Type', 'application/json');
-          res.json({
-            err: err,
-            success: false
-          })
-        } else {
-          res.statusCode = 200;
-          res.setHeader('Content-Type', 'application/json');
-          res.json({
-            data: data,
-            success: true
-          })
-        }
-      });
-      teams.findById(teamId, (err, result) => {
-        result.hackathonWon.push(hackathonId);
-        result.save();
-        (result.participants).forEach(element => {
-          findById(element, (err, user) => {
-            user.hackathonWons.push(hackathonId);
-            user.save();
-          })
-        });
-      });
+      if (!req.body.hackathonName) {
+        userId = req.body.hackathonId;
+      } else {
+        hackathons.findOne({
+          "name": req.body.hackathonName
+        }, (err, result) => {
+          console.log(result);
+          hackathonId = result._id;
+          if (req.body.teamName) {
+            teams.findOne({
+              "name": req.body.teamName
+            }, (err, response) => {
+              console.log(result);
+              teamId = response._id;
+              console.log("TEAM ID " + teamId);
+              console.log("USER ID " + hackathonId);
+              updateTeam(teamId, hackathonId);
+            })
+          }
+        })
+      }
     }
 
     if (req.body.type == 'hackathonParticipant') {
+      var updateTeam = function (teamId, hackathonId) {
+        teams.findById(teamId)
+          .then((element) => {
+            element.hackthonParticipated.push(hackathonId);
+            teams.findByIdAndUpdate(teamId, {
+              $set: {
+                hackthonParticipated: element.hackthonParticipated
+              }
+            }, {
+              new: true
+            }, (err, response) => {
+              var participants = response.participants;
+              participants.forEach(participant => {
+                users.findById(participant, (err, parResponse) => {
+                  // console.log("USER: " + parResponse);
+                  parResponse.hackathonParticipated.push(hackathonId);
+                  users.findByIdAndUpdate(participant, {
+                    $set: {
+                      hackathonParticipated: parResponse.hackathonParticipated
+                    }
+                  }, {
+                    new: true
+                  }, (err, variable) => {
+                    //do nothing
+                  })
+                })
+              });
+              console.log("TEAM UPDATEDs")
+              console.log(response);
+              updateHackathon(teamId, hackathonId);
+            })
+          })
+          .catch((err) => {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              err: err,
+              success: false
+            })
+          });
+      }
+      var updateHackathon = function (teamId, hackathonId) {
+        hackathons.findById(hackathonId)
+          .then((result) => {
+            result.participants.push(teamId);
+            hackathons.findByIdAndUpdate(hackathonId, {
+              $set: {
+                participants: result.participants
+              }
+            }, {
+              new: true
+            }, (err, response) => {
+              console.log("Hackathon UPDATEDs")
+              console.log(response);
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.json({
+                data: response,
+                success: true
+              })
+
+            })
+
+          })
+          .catch((err) => {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              err: err,
+              success: false
+            })
+          });
+      }
       var hackathonId;
       var teamId;
-      if (req.body.hackathonName) {
-        hackathons.findOne({
-          "hackathonName": req.body.hackathonName
-        }, (err, result) => {
-          hackathonId = result._id;
-        })
-      } else {
-        hackathonId = req.body.hackathonId;
-      }
-      if (req.body.teamName) {
-        teams.findOne({
-          "teamName": req.body.teamName
-        }, (err, result) => {
-          teamId = result._id;
-        })
-      } else {
+      if (!req.body.teamName) {
         teamId = req.body.teamId;
       }
-      hackathons.findById(hackathonId, (err, element) => {
-        element.participants.push(teamId);
-        element.save();
-      })
-      teams.findById(teamId, (err, result) => {
-        result.hackthonParticipated.push(hackathonId);
-        result.save();
-        (result.participants).forEach(element => {
-          findById(element, (err, user) => {
-            user.hackathonParticipated.push(hackathonId);
-            user.save();
-          })
-        });
-      });
+      if (!req.body.hackathonName) {
+        userId = req.body.hackathonId;
+      } else {
+        hackathons.findOne({
+          "name": req.body.hackathonName
+        }, (err, result) => {
+          console.log(result);
+          hackathonId = result._id;
+          if (req.body.teamName) {
+            teams.findOne({
+              "name": req.body.teamName
+            }, (err, response) => {
+              console.log(result);
+              teamId = response._id;
+              console.log("TEAM ID " + teamId);
+              console.log("USER ID " + hackathonId);
+              updateTeam(teamId, hackathonId);
+            })
+          }
+        })
+      }
+
     }
     if (req.body.type == 'teamPlayer') {
       var updateTeam = function (teamId, userId) {
         teams.findById(teamId)
           .then((element) => {
             element.participants.push(userId);
-            element.save()
-              .then((response) => {
-                updateUser(teamId, userId);
-              })
+            teams.findByIdAndUpdate(teamId, {
+              $set: {
+                participants: element.participants
+              }
+            }, {
+              new: true
+            }, (err, response) => {
+              console.log("TEAM UPDATEDs")
+              console.log(response);
+              updateUser(teamId, userId);
+            })
           })
           .catch((err) => {
             res.statusCode = 500;
@@ -608,15 +724,24 @@ router.post('/', function (req, res, next) {
         users.findById(userId)
           .then((result) => {
             result.teams.push(teamId);
-            result.save()
-              .then((response) => {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json({
-                  data: response,
-                  success: true
-                })
+            users.findByIdAndUpdate(userId, {
+              $set: {
+                teams: result.teams
+              }
+            }, {
+              new: true
+            }, (err, response) => {
+              console.log("USER UPDATEDs")
+              console.log(response);
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.json({
+                data: response,
+                success: true
               })
+
+            })
+
           })
           .catch((err) => {
             res.statusCode = 500;
