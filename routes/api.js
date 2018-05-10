@@ -7,57 +7,6 @@ var hackathons = require('../models/hackathons').model;
 mongoose.Promise = require('bluebird');
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  //This is the code for URL/api?type='hackathonList'
-  //this will return list of all hackathons
-  /*
-  Different parameters allowed
-  1 type(mandatory)
-    i. hackathons (details for hackathon(s))
-      Further options available are:
-      a. name : String (Returns details with certain name)
-      b. id: ObjectID (Return details of hackathon with specific id)
-      c. active: true or false (Return list of all hackathons that are currently active)
-      d. activeIn: integer (for time in minutes) (Return list of hackathons those will be active in value hours)
-      e. organiser: List of all organisers
-        - name or id is required for this one
-    ii. teams (details for hackathon(s))
-      Further options available are:
-      a. name :String (Returns details with certain name)
-      b. id: ObjectID (Return details of hackathon with specific id)
-      c. activeEvents: integer (returns list of currently active or to be active in time(minutes) for given team){a or b are required for this one}
-    iii. users
-      Further options available are:
-      a. name :String (Returns details with certain name)
-      b. id: ObjectID (Return details of hackathon with specific id)
-      c. activeEvents: integer (returns list of currently active or to be active in time(minutes) for given user){a or b are required for this one}
-  
-  */
-  // var searchQuery = {};
-  // if(req.query.name){
-  //   searchQuery["name"] = req.query.name;
-  // }
-  // if(req.query.id){
-  //   searchQuery = {};
-  //   searchQuery["_id"] = req.query.id;
-  // }
-
-  var callback = function (err, data) {
-    if (err) {
-      res.statusCode = 500;
-      res.setHeader('Content-Type', 'application/json');
-      res.json({
-        err: err,
-        success: false
-      })
-    } else {
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'application/json');
-      res.json({
-        data: data,
-        success: true
-      })
-    }
-  }
   if (req.query.type == 'hackathons') {
     //when name query parameter is added as well in request
     if (req.query.name) {
